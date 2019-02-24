@@ -9,13 +9,16 @@ class Yadisk:
         if auth:
             self.create_oauth_token()
 
-    def create_oauth_token(self):
-        self.oauth_token = self.get_oauth_token()
+    def create_oauth_token(self, ouath_token = None):
+        if ouath_token is None:
+            self.oauth_token = self.get_oauth_token()
+        else:
+            self.oauth_token = ouath_token
         self.session.headers['Authorization'] = self.oauth_token
 
     def get_download_url(self, file_name, dir_url=None):
         if dir_url is None:
-            url = "https://cloud-api.yandex.net/v1/disk/public/resources/download?path=/{}".format(
+            url = "https://cloud-api.yandex.net/v1/disk/resources/download?path=/{}".format(
                 file_name)
         else:
             url = "https://cloud-api.yandex.net/v1/disk/public/resources/download?public_key={}&path=/{}".format(
@@ -30,10 +33,10 @@ class Yadisk:
                 if chunk:
                     f.write(chunk)
 
-    def download(self, file_name, dir_url, file_name_to_save=None):
+    def download(self, file_name, dir_url=None, file_name_to_save=None):
         if file_name_to_save is None:
             file_name_to_save = file_name
-        download_url = self.get_download_url(dir_url, file_name)
+        download_url = self.get_download_url(file_name, dir_url)
         self.download_by_url(download_url, file_name_to_save)
 
     def get_upload_url(self, path_to_save, overwrite=True):
@@ -66,3 +69,7 @@ class Yadisk:
         print("https://oauth.yandex.ru/authorize?response_type=token&client_id={}".format(self.application_id))
         oauth_token = input()
         return oauth_token
+
+if __name__ == "__main__":
+    disk = Yadisk()
+    disk.download("main.py")
