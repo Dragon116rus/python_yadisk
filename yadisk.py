@@ -39,7 +39,7 @@ class Yadisk:
     def _download(self, url, file_name):
         get_response = self.session.get(url, stream=True)
         with open(file_name, 'wb') as f:
-            for chunk in get_response.iter_content(chunk_size=1024):
+            for chunk in get_response.iter_content(chunk_size=1024*16):
                 if chunk:
                     f.write(chunk)
 
