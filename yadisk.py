@@ -133,10 +133,23 @@ class Yadisk:
 
         return items
 
+    def mkdir(self, path):
+        """Create dir with given path
+
+            path {str} -- path to dir (default: {None})
+        """
+        api_url = 'https://cloud-api.yandex.net/v1/disk/resources'
+        payload = {}
+        if path[0] != "/":
+            path = "/" + path
+        payload['path'] = path
+        response = self.session.put(api_url, params=payload)
+        return response
+
 if __name__ == "__main__":
     disk = Yadisk(auth=True)
     print(disk.list_item("tmp"))
-
+    print(disk.mkdir("new"))
     # disk.download_public("https://yadi.sk/d/Tid5zLokLHb30g", path="main.py", path_to_save="qwe.py")
     # disk = Yadisk(auth=True)
     # print(disk.upload("qwe.py", "main.py"))
