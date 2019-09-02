@@ -108,9 +108,35 @@ class Yadisk:
         oauth_token = input()
         return oauth_token
 
-if __name__ == "__main__":
-    disk = Yadisk(auth=False)
+    def list_item(self, path=None):
+        """Show items in dir
 
-    disk.download_public("https://yadi.sk/d/Tid5zLokLHb30g", path="main.py", path_to_save="qwe.py")
+        Keyword Arguments:
+            path {str} -- path to file in folder (default: {None})
+        """
+        api_url = 'https://cloud-api.yandex.net/v1/disk/resources'
+        payload = {
+            # 'public_key': url,
+                    'fields':'_embedded.items.path'
+                    }
+        if path is None:
+            path = "/"
+        if path[0] != "/":
+            path = "/" + path
+        payload['path'] = path
+        response = self.session.get(api_url, params=payload)
+        items_json = json.loads(response.text)['_embedded']['items']
+
+        items = []
+        for item in items_json:
+            items.append(item['path'])
+
+        return items
+
+if __name__ == "__main__":
     disk = Yadisk(auth=True)
-    print(disk.upload("qwe.py", "main.py"))
+    print(disk.list_item("tmp"))
+
+    # disk.download_public("https://yadi.sk/d/Tid5zLokLHb30g", path="main.py", path_to_save="qwe.py")
+    # disk = Yadisk(auth=True)
+    # print(disk.upload("qwe.py", "main.py"))
