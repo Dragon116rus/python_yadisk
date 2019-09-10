@@ -108,11 +108,12 @@ class Yadisk:
         oauth_token = input()
         return oauth_token
 
-    def list_item(self, path=None):
+    def list_item(self, path=None, limit=None):
         """Show items in dir
 
         Keyword Arguments:
             path {str} -- path to file in folder (default: {None})
+            limit {int} -- number of items to return
         """
         api_url = 'https://cloud-api.yandex.net/v1/disk/resources'
         payload = {
@@ -124,6 +125,8 @@ class Yadisk:
         if path[0] != "/":
             path = "/" + path
         payload['path'] = path
+        if limit is not None:
+            payload['limit'] = limit
         response = self.session.get(api_url, params=payload)
         items_json = json.loads(response.text)['_embedded']['items']
 
@@ -149,7 +152,3 @@ class Yadisk:
 if __name__ == "__main__":
     disk = Yadisk(auth=True)
     print(disk.list_item("tmp"))
-    print(disk.mkdir("new"))
-    # disk.download_public("https://yadi.sk/d/Tid5zLokLHb30g", path="main.py", path_to_save="qwe.py")
-    # disk = Yadisk(auth=True)
-    # print(disk.upload("qwe.py", "main.py"))
