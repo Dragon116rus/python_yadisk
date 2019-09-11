@@ -43,8 +43,29 @@ class Yadisk:
                 if chunk:
                     f.write(chunk)
 
+    def get_download_url_public(self, url, path=None):
+        """Get url to dowlnoad data by shared link 
+        
+        Arguments:
+            url {str} -- shared link to disk
+            example: "https://yadi.sk/d/Tid5zLokLHb30g"
+        
+        Keyword Arguments:
+            path {str} -- path to file in folder (default: {None})
+            example: "main.py"
+        """
+        api_url = 'https://cloud-api.yandex.net/v1/disk/public/resources/download'
+        payload = {'public_key': url}
+        if path is not None:
+            if path[0] != "/":
+                path = "/" + path
+            payload['path'] = path
+        downloading_url_response = self.session.get(api_url, params=payload)
+        downloading_url = self._parse_response(downloading_url_response)['href']
+        return downloading_url
+
     def download_public(self, url, path=None, path_to_save="tmp"):
-        """Downlading data by public url
+        """Download data by shared link 
         
         Arguments:
             url {str} -- shared link to disk
@@ -55,19 +76,7 @@ class Yadisk:
             example: "main.py"
             path_to_save {str} -- filename to save (default: {"tmp"})
         """
-        api_url = 'https://cloud-api.yandex.net/v1/disk/public/resources/download'
-        payload = {'public_key': url}
-        if path is not None:
-            if path[0] != "/":
-                path = "/" + path
-            payload['path'] = path
-        if path_to_save is None:
-            if path is None:
-                path_to_save = "tmp"
-            else:
-                path_to_save = path
-        downloading_url_response = self.session.get(api_url, params=payload)
-        downloading_url = self._parse_response(downloading_url_response)['href']
+        downloading_url = self.get_download_url_public(url, path) 
         self._download(downloading_url, path_to_save)
 
 
